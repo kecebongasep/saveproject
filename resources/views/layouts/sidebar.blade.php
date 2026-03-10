@@ -66,7 +66,7 @@
         <ul class="nav flex-column gap-2">
 
             {{-- ADMIN --}}
-            @if(auth()->user()->peran === 'admin')
+            @if(in_array(auth()->user()->peran, ['admin','petugas']))
             <li class="nav-item">
                 <a href="{{ route('dashboard') }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -101,14 +101,18 @@
                     <i class="bi bi-book"></i> Buku
                 </a>
             </li>
-            @endif
 
-            {{-- ADMIN & PETUGAS --}}
-            @if(in_array(auth()->user()->peran, ['admin','petugas']))
             <li class="nav-item">
                 <a href="{{ route('peminjaman.index') }}"
                     class="nav-link {{ request()->routeIs('peminjaman.*') ? 'active' : '' }}">
                     <i class="bi bi-journal-check"></i> Peminjaman
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('user.index') }}"
+                    class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i> Kelola User
                 </a>
             </li>
             @endif

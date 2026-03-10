@@ -21,8 +21,8 @@ class PeminjamanController extends Controller
             'user',
             'detail.buku'
         ])
-        ->orderByDesc('tanggal_pinjam')
-        ->paginate(10);
+            ->orderByDesc('tanggal_pinjam')
+            ->paginate(10);
 
         return view('peminjaman.index', compact('peminjaman'));
     }
@@ -49,36 +49,45 @@ class PeminjamanController extends Controller
             'tanggal_pinjam' => 'required|date'
         ]);
 
-        DB::transaction(function () use ($request) {
+        /* =====================
+       CEK BLOKIR (DI LUAR TRANSAKSI)
+    ===================== */
 
-            // 🔒 CEK BLOKIR
-            $blokir = DetailPeminjaman::whereHas('peminjaman', function ($q) use ($request) {
-                $q->where('id_peminjam', $request->id_peminjam);
-            })
+        $blokir = DetailPeminjaman::whereHas('peminjaman', function ($q) use ($request) {
+            $q->where('id_peminjam', $request->id_peminjam);
+        })
             ->whereNotNull('denda')
             ->latest('tanggal_kembali')
             ->first();
 
-            if ($blokir) {
-                $bolehPinjam = Carbon::parse($blokir->tanggal_kembali)
-                    ->addDays($blokir->denda);
+        if ($blokir) {
 
-                if (now()->lessThan($bolehPinjam)) {
-                    throw new \Exception(
+            $bolehPinjam = Carbon::parse($blokir->tanggal_kembali)
+                ->addDays($blokir->denda);
+
+            if (now()->lessThan($bolehPinjam)) {
+                return back()
+                    ->withInput()
+                    ->with(
+                        'error',
                         'Peminjam masih diblokir sampai ' .
-                        $bolehPinjam->format('d-m-Y')
+                            $bolehPinjam->format('d-m-Y')
                     );
-                }
             }
+        }
 
-            // HEADER PEMINJAMAN
+        /* =====================
+       BARU MASUK TRANSAKSI
+    ===================== */
+
+        DB::transaction(function () use ($request) {
+
             $peminjaman = Peminjaman::create([
                 'id_peminjam'    => $request->id_peminjam,
                 'tanggal_pinjam' => $request->tanggal_pinjam,
                 'status'         => 'dipinjam'
             ]);
 
-            // DETAIL BUKU
             foreach ($request->buku as $id_buku) {
 
                 $buku = Buku::findOrFail($id_buku);
@@ -91,12 +100,11 @@ class PeminjamanController extends Controller
                     'id_peminjaman'        => $peminjaman->id_peminjaman,
                     'id_buku'              => $id_buku,
                     'jumlah'               => 1,
-                    'tanggal_jatuh_tempo'  => now()->addDays(7),
+                    'tanggal_jatuh_tempo' => Carbon::parse($request->tanggal_pinjam)->addDays(7),
                     'tanggal_kembali'      => null,
                     'denda'                => null
                 ]);
 
-                // kurangi stok
                 $buku->decrement('stok');
             }
         });

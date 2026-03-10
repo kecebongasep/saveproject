@@ -9,6 +9,7 @@ use App\Http\Controllers\PeminjamDashboardController;
 use App\Http\Controllers\PenerbitController;
 use App\Http\Controllers\PenulisController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('buku', BukuController::class);
     Route::resource('peminjaman', PeminjamanController::class);
     Route::resource('detailpeminjaman', DetailController::class);
+    Route::resource('user', UserController::class);
 
     Route::put(
         'detail-peminjaman/{id}/kembalikan',

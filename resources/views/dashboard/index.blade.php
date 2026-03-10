@@ -51,35 +51,60 @@
         </div>
     </div>
 
-    <h5>Permintaan Perpanjangan</h5>
+    <div class="row">
 
-    @foreach($permintaan as $item)
-    <div class="card mb-3">
-        <div class="card-body">
-            <strong>{{ $item->buku->judul }}</strong><br>
-            Peminjam: {{ $item->peminjaman->user->nama }}<br>
-            Jatuh Tempo: {{ $item->tanggal_jatuh_tempo }}
-
-            <form action="{{ route('admin.perpanjang.setujui', $item->id_detail) }}"
-                method="POST" class="d-inline">
-                @csrf
-                <button class="btn btn-sm btn-success">Setujui</button>
-            </form>
-
-            <button class="btn btn-sm btn-danger"
-                data-bs-toggle="modal"
-                data-bs-target="#tolak{{ $item->id_detail }}">
-                Tolak
-            </button>
+        {{-- GRAFIK (KIRI) --}}
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Grafik Peminjaman per Bulan</h6>
+                    <canvas id="chartPinjam"></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-    @endforeach
 
-    {{-- CHART --}}
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h6 class="fw-bold mb-3">Grafik Peminjaman per Bulan</h6>
-            <canvas id="chartPinjam"></canvas>
+        {{-- PERMINTAAN PERPANJANGAN (KANAN) --}}
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Permintaan Perpanjangan</h5>
+
+                    {{-- LIST PERMINTAAN --}}
+                    <div class="mt-3">
+
+                        @foreach($permintaan as $item)
+                        <div class="card mb-3">
+                            <div class="card-body">
+
+                                <strong>{{ $item->buku->judul }}</strong><br>
+                                Peminjam: {{ $item->peminjaman->user->nama }}<br>
+
+                                Jatuh Tempo:
+                                {{ \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}
+                                <br><br>
+
+                                <form action="{{ route('admin.perpanjang.setujui', $item->id_detail) }}"
+                                    method="POST" class="d-inline">
+                                    @csrf
+                                    <button class="btn btn-sm btn-success">Setujui</button>
+                                </form>
+
+                                <button class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#tolak{{ $item->id_detail }}">
+                                    Tolak
+                                </button>
+
+                            </div>
+                        </div>
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

@@ -23,7 +23,7 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button class="btn btn-warning">Update</button>
+                <button class="btn btn-success">Update</button>
                 <a href="{{ route('penerbit.index') }}" class="btn btn-secondary">
                     Kembali
                 </a>

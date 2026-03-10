@@ -48,6 +48,7 @@
                     <th>Buku</th>
                     <th>Peminjam</th>
                     <th>Tgl Pinjam</th>
+                    <th>Tgl Jatuh Tempo</th>
                     <th>Status</th>
                     <th width="25%">Aksi</th>
                 </tr>
@@ -66,6 +67,13 @@
                     <td>{{ $item->user->nama ?? '-'}}</td>
                     <td class="text-center">
                         {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->translatedFormat('d F Y') }}
+                    </td>
+                    <td class="text-center">
+                        @foreach($item->detail as $detail)
+                        <div>
+                            {{ \Carbon\Carbon::parse($detail->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}
+                        </div>
+                        @endforeach
                     </td>
                     <td class="text-center">
                         <span class="badge

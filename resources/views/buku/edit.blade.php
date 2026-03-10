@@ -123,7 +123,7 @@
             </div>
 
             <div class="d-flex gap-2">
-                <button class="btn btn-primary">Update</button>
+                <button class="btn btn-success">Update</button>
                 <a href="{{ route('buku.index') }}" class="btn btn-secondary">
                     Kembali
                 </a>
